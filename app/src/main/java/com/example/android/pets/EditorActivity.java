@@ -15,10 +15,13 @@
  */
 package com.example.android.pets;
 
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,11 +30,23 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.example.android.data.DbHelper;
+import com.example.android.data.PetsContract;
+
+import static com.example.android.data.PetsContract.PetsEntry.COLUMN_PET_BREED;
+import static com.example.android.data.PetsContract.PetsEntry.COLUMN_PET_GENDER;
+import static com.example.android.data.PetsContract.PetsEntry.COLUMN_PET_NAME;
+import static com.example.android.data.PetsContract.PetsEntry.COLUMN_PET_WEIGHT;
+import static com.example.android.data.PetsContract.PetsEntry.GENDER_FEMALE;
+import static com.example.android.data.PetsContract.PetsEntry.GENDER_MALE;
+import static com.example.android.data.PetsContract.PetsEntry.GENDER_UNKNOWN;
+import static com.example.android.data.PetsContract.PetsEntry.TABLE_NAME;
+
 /**
  * Allows user to create a new pet or edit an existing one.
  */
 public class EditorActivity extends AppCompatActivity {
-
+    private SQLiteDatabase sqLiteDatabase;
     /** EditText field to enter the pet's name */
     private EditText mNameEditText;
 
@@ -86,11 +101,11 @@ public class EditorActivity extends AppCompatActivity {
                 String selection = (String) parent.getItemAtPosition(position);
                 if (!TextUtils.isEmpty(selection)) {
                     if (selection.equals(getString(R.string.gender_male))) {
-                        mGender = 1; // Male
+                        mGender = GENDER_MALE; // Male
                     } else if (selection.equals(getString(R.string.gender_female))) {
-                        mGender = 2; // Female
+                        mGender = GENDER_FEMALE; // Female
                     } else {
-                        mGender = 0; // Unknown
+                        mGender = GENDER_UNKNOWN; // Unknown
                     }
                 }
             }
@@ -117,7 +132,17 @@ public class EditorActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
-                // Do nothing for now
+                ContentValues values = new ContentValues();
+                values.put(COLUMN_PET_NAME, String.valueOf(mNameEditText.getText()));
+                values.put(COLUMN_PET_BREED,mBreedEditText.getText().toString());
+                values.put(COLUMN_PET_GENDER,mGenderSpinner.getSelectedItem().toString());
+                Log.v("saving",""+mGenderSpinner.getSelectedItem().toString() );
+                values.put(COLUMN_PET_WEIGHT,Integer.parseInt(mWeightEditText.getText().toString()));
+                Log.v("saving weight ",""+Integer.parseInt(mWeightEditText.getText().toString()));
+                DbHelper mDbHelper = new DbHelper(EditorActivity.this);
+                sqLiteDatabase = mDbHelper.getWritableDatabase();
+                sqLiteDatabase.insert(TABLE_NAME,null,values);
+                NavUtils.navigateUpFromSameTask(this);
                 return true;
             // Respond to a click on the "Delete" menu option
             case R.id.action_delete:
