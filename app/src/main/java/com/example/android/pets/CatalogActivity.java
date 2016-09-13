@@ -54,15 +54,29 @@ public class CatalogActivity extends AppCompatActivity {
      * the pets database.
      */
     private void displayDatabaseInfo() {
-
+        String[] projection = {COLUMN_PET_NAME,COLUMN_PET_BREED,COLUMN_PET_GENDER,COLUMN_PET_WEIGHT};
         // Perform this raw SQL query "SELECT * FROM pets"
         // to get a Cursor that contains all rows from the pets table.
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
+//        Cursor cursor; = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
+
+        Cursor cursor = db.query(TABLE_NAME,projection,null,null,null,null,null,null);
         try {
             // Display the number of rows in the Cursor (which reflects the number of rows in the
             // pets table in the database).
             TextView displayView = (TextView) findViewById(R.id.text_view_pet);
-            displayView.setText("Number of rows in pets database table: " + cursor.getCount());
+            displayView.setText("Number of rows in pets database table: " + cursor.getCount()+"\n");
+            displayView.append(_ID+" "+COLUMN_PET_NAME+ " "+COLUMN_PET_BREED+" "+COLUMN_PET_GENDER+""+COLUMN_PET_WEIGHT+ "\n");
+
+//            // Figure out the index of each column
+//            int idColumnIndex = cursor.getColumnIndex(PetEntry._ID);
+//            int nameColumnIndex = cursor.getColumnIndex(PetEntry.COLUMN_PET_NAME);
+//            int breedColumnIndex = cursor.getColumnIndex(PetEntry.COLUMN_PET_BREED);
+//            int genderColumnIndex = cursor.getColumnIndex(PetEntry.COLUMN_PET_GENDER);
+//            int weightColumnIndex = cursor.getColumnIndex(PetEntry.COLUMN_PET_WEIGHT);
+
+            while(cursor.moveToNext()){
+                displayView.append(""+cursor.getInt(cursor.getColumnIndex(_ID))+ " "+ cursor.getString(cursor.getColumnIndex(COLUMN_PET_NAME))+" \n");
+            }
         } finally {
             // Always close the cursor when you're done reading from it. This releases all its
             // resources and makes it invalid.
