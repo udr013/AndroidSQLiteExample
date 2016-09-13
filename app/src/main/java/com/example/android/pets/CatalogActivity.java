@@ -54,12 +54,27 @@ public class CatalogActivity extends AppCompatActivity {
      * the pets database.
      */
     private void displayDatabaseInfo() {
-        String[] projection = {COLUMN_PET_NAME,COLUMN_PET_BREED,COLUMN_PET_GENDER,COLUMN_PET_WEIGHT};
+
+        String[] projection = {
+                _ID,
+                COLUMN_PET_NAME,
+                COLUMN_PET_BREED,
+                COLUMN_PET_GENDER,
+                COLUMN_PET_WEIGHT
+        };
         // Perform this raw SQL query "SELECT * FROM pets"
         // to get a Cursor that contains all rows from the pets table.
 //        Cursor cursor; = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
 
-        Cursor cursor = db.query(TABLE_NAME,projection,null,null,null,null,null,null);
+        // Perform a query on the pets table
+        Cursor cursor = db.query(
+                TABLE_NAME,   // The table to query
+                projection,            // The columns to return
+                null,                  // The columns for the WHERE clause
+                null,                  // The values for the WHERE clause
+                null,                  // Don't group the rows
+                null,                  // Don't filter by row groups
+                null); // The sort order
         try {
             // Display the number of rows in the Cursor (which reflects the number of rows in the
             // pets table in the database).
